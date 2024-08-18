@@ -3,28 +3,31 @@ package yamlutils
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"reflect"
 
 	"go.n16f.net/ejson"
 	"gopkg.in/yaml.v3"
 )
 
-// Load parses a YAML stream and copy the first document to an arbitrary value.
-// The document must be a valid JSON value, meaning that object keys must be
-// strings.
-//
-// The data conversion process uses "json" structure tags so that the same
-// structures can be encoded and decoding using either YAML or JSON. This also
-// ensures that the semantics of encoding/json are used everywhere.
-//
-// JSON decoding using the go.n16f.net/ejson module, meaning that ValidateJSON
-// methods will be called on objects which define it.
-func Load(data []byte, dest any) error {
-	yamlDecoder := yaml.NewDecoder(bytes.NewReader(data))
+type Decoder struct {
+	*yaml.Decoder
+}
 
+func NewDecoder(data []byte) *Decoder {
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	return &Decoder{Decoder: decoder}
+}
+
+func (d *Decoder) Decode(dest any) error {
 	var yamlValue any
-	if err := yamlDecoder.Decode(&yamlValue); err != nil && err != io.EOF {
+	if err := d.Decoder.Decode(&yamlValue); err != nil {
+		if err == io.EOF {
+			return io.EOF
+		}
+
 		return fmt.Errorf("cannot decode YAML data: %w", err)
 	}
 
@@ -45,9 +48,44 @@ func Load(data []byte, dest any) error {
 	return nil
 }
 
-// YAMLValueToJSONValue converts a value returned by the YAML parser into a
-// value that can be safely encoded to JSON data. The function fails if the
-// value is an object containing a non-string key.
+func Load(data []byte, dest any) error {
+	decoder := NewDecoder(data)
+	return decoder.Decode(dest)
+}
+
+func LoadDocuments(data []byte, dest any) error {
+	destType := reflect.TypeOf(dest)
+	if destType.Kind() != reflect.Pointer {
+		return fmt.Errorf("destination value is not a pointer")
+	}
+
+	pointedDestType := destType.Elem()
+	if pointedDestType.Kind() != reflect.Slice {
+		return fmt.Errorf("destination value is not a pointer to a slice")
+	}
+
+	eltType := pointedDestType.Elem()
+
+	decoder := NewDecoder(data)
+	docs := reflect.MakeSlice(pointedDestType, 0, 0)
+
+	for {
+		doc := reflect.New(eltType)
+		if err := decoder.Decode(doc.Interface()); err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return err
+		}
+
+		docs = reflect.Append(docs, doc.Elem())
+	}
+
+	reflect.ValueOf(dest).Elem().Set(docs)
+	return nil
+}
+
 func YAMLValueToJSONValue(yamlValue any) (any, error) {
 	// For some reason, gopkg.in/yaml.v3 will return objects as map[string]any
 	// if all keys are strings, and as map[any]any if not. So we have to handle
