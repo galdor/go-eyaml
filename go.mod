@@ -1,4 +1,4 @@
-module go.n16f.net/yamlutils
+module go.n16f.net/eyaml
 
 go 1.22.5
 

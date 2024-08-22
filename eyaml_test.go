@@ -1,4 +1,4 @@
-package yamlutils
+package eyaml
 
 import (
 	"testing"
