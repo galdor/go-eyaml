@@ -4,8 +4,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.8.3 h1:RP3t2pwF7cMEbC1dqtB6poj3niw/9gnV4Cjg5oW5gtY=
 github.com/stretchr/testify v1.8.3/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
-go.n16f.net/ejson v0.0.0-20240707135936-27789a89e2f3 h1:cS2EHT4NHOpwuvx1TNIOCAntIOEUteSDobbVW3y0iY4=
-go.n16f.net/ejson v0.0.0-20240707135936-27789a89e2f3/go.mod h1:96wBQ6dI+0R4sM0LK5OVPqQGRFoWyVtiLRendDKLAJ4=
+go.n16f.net/ejson v0.0.0-20260618102742-132cb74ea35c h1:iZo85mgPQN6NJjkAGA0vIGdHzn7SE7OvvBgBJZC5Y4s=
+go.n16f.net/ejson v0.0.0-20260618102742-132cb74ea35c/go.mod h1:96wBQ6dI+0R4sM0LK5OVPqQGRFoWyVtiLRendDKLAJ4=
 go.n16f.net/uuid v0.0.0-20240707135755-e4fd26b968ad h1:QYbHaaFqx6hMor1L6iMSmyhMFvXQXhKaNk9nefug07M=
 go.n16f.net/uuid v0.0.0-20240707135755-e4fd26b968ad/go.mod h1:hvPEWZmyP50in1DH72o5vUvoXFFyfRU6oL+p2tAcbgU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=

@@ -12,6 +12,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type DecodingOptions struct {
+	DisableValidation bool
+}
+
 type Decoder struct {
 	*yaml.Decoder
 }
@@ -22,6 +26,10 @@ func NewDecoder(data []byte) *Decoder {
 }
 
 func (d *Decoder) Decode(dest any) error {
+	return d.Decode2(dest, &DecodingOptions{})
+}
+
+func (d *Decoder) Decode2(dest any, opts *DecodingOptions) error {
 	var yamlValue any
 	if err := d.Decoder.Decode(&yamlValue); err != nil {
 		if err == io.EOF {
@@ -41,7 +49,12 @@ func (d *Decoder) Decode(dest any) error {
 		return fmt.Errorf("cannot generate JSON data: %w", err)
 	}
 
-	if err := ejson.Unmarshal(jsonData, dest); err != nil {
+	unmarshalingOpts := ejson.UnmarshalingOptions{
+		DisableValidation: opts.DisableValidation,
+	}
+
+	err = ejson.Unmarshal2(jsonData, dest, &unmarshalingOpts)
+	if err != nil {
 		return fmt.Errorf("cannot decode JSON data: %w", err)
 	}
 
